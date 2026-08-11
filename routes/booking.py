@@ -76,7 +76,7 @@ def confirm_booking():
         flash(f'Booking Failed: {error_msg}', 'danger')
         return redirect(url_for('booking.book_bus', bus_id=bus_id, passengers=passengers_count))
 
-@booking_bp.route('/ticket/<int:booking_id>')
+@booking_bp.route('/ticket/<booking_id>')
 @login_required
 def ticket(booking_id):
     booking = BookingModel.get_by_id(booking_id)

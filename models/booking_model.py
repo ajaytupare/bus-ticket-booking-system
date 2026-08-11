@@ -88,19 +88,33 @@ class BookingModel:
 
     @staticmethod
     def get_by_id(booking_id):
-        query = """
-            SELECT bk.*, b.operator_name, b.bus_number, b.source, b.destination, 
-                   b.departure_time, b.arrival_time, b.travel_date, b.bus_type, b.price,
-                   u.name as user_name, u.email as user_email, u.phone as user_phone
-            FROM bookings bk
-            JOIN buses b ON bk.bus_id = b.id
-            JOIN users u ON bk.user_id = u.id
-            WHERE bk.id = ?
-        """
-        booking = query_db(query, (booking_id,), one=True)
+        b_str = str(booking_id).strip()
+        if b_str.isdigit():
+            query = """
+                SELECT bk.*, b.operator_name, b.bus_number, b.source, b.destination, 
+                       b.departure_time, b.arrival_time, b.travel_date, b.bus_type, b.price,
+                       u.name as user_name, u.email as user_email, u.phone as user_phone
+                FROM bookings bk
+                JOIN buses b ON bk.bus_id = b.id
+                JOIN users u ON bk.user_id = u.id
+                WHERE bk.id = ? OR bk.booking_reference = ?
+            """
+            booking = query_db(query, (int(b_str), b_str), one=True)
+        else:
+            query = """
+                SELECT bk.*, b.operator_name, b.bus_number, b.source, b.destination, 
+                       b.departure_time, b.arrival_time, b.travel_date, b.bus_type, b.price,
+                       u.name as user_name, u.email as user_email, u.phone as user_phone
+                FROM bookings bk
+                JOIN buses b ON bk.bus_id = b.id
+                JOIN users u ON bk.user_id = u.id
+                WHERE bk.booking_reference = ?
+            """
+            booking = query_db(query, (b_str,), one=True)
+
         if booking:
             passengers_query = "SELECT * FROM passengers WHERE booking_id = ? ORDER BY seat_number ASC"
-            booking['passengers'] = query_db(passengers_query, (booking_id,))
+            booking['passengers'] = query_db(passengers_query, (booking['id'],))
         return booking
 
     @staticmethod
@@ -135,18 +149,25 @@ class BookingModel:
         conn, engine = get_db()
         cursor = conn.cursor()
         placeholder = '%s' if engine == 'mysql' else '?'
+        b_str = str(booking_id).strip()
 
         try:
-            # Check eligibility
-            if user_id:
-                cursor.execute(f"SELECT * FROM bookings WHERE id = {placeholder} AND user_id = {placeholder}", (booking_id, user_id))
+            # Check eligibility by ID or Reference
+            if b_str.isdigit():
+                if user_id:
+                    cursor.execute(f"SELECT * FROM bookings WHERE (id = {placeholder} OR booking_reference = {placeholder}) AND user_id = {placeholder}", (int(b_str), b_str, user_id))
+                else:
+                    cursor.execute(f"SELECT * FROM bookings WHERE id = {placeholder} OR booking_reference = {placeholder}", (int(b_str), b_str))
             else:
-                cursor.execute(f"SELECT * FROM bookings WHERE id = {placeholder}", (booking_id,))
-                
+                if user_id:
+                    cursor.execute(f"SELECT * FROM bookings WHERE booking_reference = {placeholder} AND user_id = {placeholder}", (b_str, user_id))
+                else:
+                    cursor.execute(f"SELECT * FROM bookings WHERE booking_reference = {placeholder}", (b_str,))
+
             row = cursor.fetchone()
             if engine == 'sqlite' and row:
                 row = dict(row)
-                
+
             if not row:
                 conn.close()
                 return False, "Booking not found or access denied."
@@ -156,12 +177,12 @@ class BookingModel:
                 return False, "Booking is already cancelled."
 
             # Count seats to restore
-            cursor.execute(f"SELECT COUNT(*) as count FROM passengers WHERE booking_id = {placeholder}", (booking_id,))
+            cursor.execute(f"SELECT COUNT(*) as count FROM passengers WHERE booking_id = {placeholder}", (row['id'],))
             pass_count_row = cursor.fetchone()
             pass_count = pass_count_row['count'] if engine == 'mysql' else dict(pass_count_row)['count']
 
             # Update status
-            cursor.execute(f"UPDATE bookings SET status = 'Cancelled' WHERE id = {placeholder}", (booking_id,))
+            cursor.execute(f"UPDATE bookings SET status = 'Cancelled' WHERE id = {placeholder}", (row['id'],))
 
             # Restore bus available_seats
             cursor.execute(f"UPDATE buses SET available_seats = available_seats + {placeholder} WHERE id = {placeholder}", (pass_count, row['bus_id']))
