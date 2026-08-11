@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}My Bookings - BusGo{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold text-slate mb-1"><i class="fa-solid fa-ticket text-primary-custom me-2"></i> My Booking History</h3>
+            <p class="text-secondary mb-0">View digital tickets and manage your active reservations</p>
+        </div>
+        <a href="{{ url_for('user.search_buses') }}" class="btn btn-primary-custom rounded-pill px-4 fw-bold">
+            <i class="fa-solid fa-plus me-1"></i> Book New Ticket
+        </a>
+    </div>
+
+    {% if not bookings %}
+        <div class="card border-0 shadow-sm rounded-4 p-5 text-center my-4">
+            <i class="fa-solid fa-ticket-simple fa-4x text-muted mb-3"></i>
+            <h4 class="fw-bold text-slate">No Bookings Found</h4>
+            <p class="text-secondary">You haven't booked any bus tickets yet.</p>
+            <div>
+                <a href="{{ url_for('user.search_buses') }}" class="btn btn-primary-custom rounded-pill px-4">Search & Book Buses</a>
+            </div>
+        </div>
+    {% else %}
+        <div class="row g-4">
+            {% for b in bookings %}
+                <div class="col-12">
+                    <div class="card card-custom border-0 shadow-sm rounded-4 overflow-hidden">
+                        <div class="card-body p-4">
+                            <div class="row align-items-center gy-3">
+                                <!-- Reference & Status -->
+                                <div class="col-md-3">
+                                    <span class="text-muted small d-block">Reference Code</span>
+                                    <h5 class="fw-bold text-slate font-monospace mb-2">{{ b.booking_reference }}</h5>
+                                    {% if b.status == 'Confirmed' %}
+                                        <span class="badge bg-success-subtle text-success px-3 py-1 rounded-pill fw-semibold">Confirmed</span>
+                                    {% elif b.status == 'Cancelled' %}
+                                        <span class="badge bg-danger-subtle text-danger px-3 py-1 rounded-pill fw-semibold">Cancelled</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary-subtle text-secondary px-3 py-1 rounded-pill fw-semibold">{{ b.status }}</span>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Bus & Route -->
+                                <div class="col-md-4">
+                                    <h6 class="fw-bold text-slate mb-1">{{ b.operator_name }} ({{ b.bus_number }})</h6>
+                                    <div class="text-secondary small mb-1">
+                                        {{ b.source }} <i class="fa-solid fa-arrow-right text-primary-custom mx-1"></i> {{ b.destination }}
+                                    </div>
+                                    <div class="text-muted small">
+                                        <i class="fa-regular fa-calendar-days text-primary-custom me-1"></i> Travel Date: {{ b.travel_date }} | {{ b.departure_time }}
+                                    </div>
+                                </div>
+
+                                <!-- Passengers & Fare -->
+                                <div class="col-md-2">
+                                    <span class="text-muted small d-block">Seats Assigned</span>
+                                    <strong class="text-dark font-monospace">{{ b.seat_numbers or 'N/A' }}</strong>
+                                    <span class="text-muted small d-block mt-1">Total Paid: <strong class="text-success">₹{{ "%.2f"|format(b.total_amount) }}</strong></span>
+                                </div>
+
+                                <!-- Actions -->
+                                <div class="col-md-3 text-md-end d-flex flex-column flex-sm-row gap-2 justify-content-md-end">
+                                    <a href="{{ url_for('booking.ticket', booking_id=b.id) }}" class="btn btn-outline-primary btn-sm rounded-3 fw-semibold">
+                                        <i class="fa-solid fa-eye me-1"></i> View Ticket
+                                    </a>
+                                    {% if b.status == 'Confirmed' %}
+                                        <form action="{{ url_for('booking.cancel_booking', booking_id=b.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to cancel this booking? Reserved seats will be released.');">
+                                            <button type="submit" class="btn btn-outline-danger btn-sm rounded-3 fw-semibold w-100">
+                                                <i class="fa-solid fa-ban me-1"></i> Cancel Booking
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

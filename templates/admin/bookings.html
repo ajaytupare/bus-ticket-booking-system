@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}All Bookings - Admin - BusGo{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold text-slate mb-1"><i class="fa-solid fa-ticket text-primary-custom me-2"></i> Master Bookings Management</h3>
+            <p class="text-secondary mb-0">Monitor and update booking statuses across all routes</p>
+        </div>
+    </div>
+
+    <div class="card card-custom border-0 shadow-sm rounded-4 p-4">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Booking Ref</th>
+                        <th>Customer</th>
+                        <th>Bus Operator</th>
+                        <th>Route</th>
+                        <th>Travel Date</th>
+                        <th>Seats</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Update Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for b in bookings %}
+                        <tr>
+                            <td class="fw-bold font-monospace text-primary-custom">
+                                <a href="{{ url_for('booking.ticket', booking_id=b.id) }}" class="text-decoration-none text-primary-custom">{{ b.booking_reference }}</a>
+                            </td>
+                            <td>
+                                <div><strong>{{ b.user_name }}</strong></div>
+                                <div class="small text-muted">{{ b.user_email }}</div>
+                            </td>
+                            <td>{{ b.operator_name }} <span class="small text-muted">({{ b.bus_number }})</span></td>
+                            <td>{{ b.source }} → {{ b.destination }}</td>
+                            <td>{{ b.travel_date }}</td>
+                            <td><span class="badge bg-light text-dark border font-monospace">{{ b.seat_numbers }}</span></td>
+                            <td class="fw-bold text-success">₹{{ "%.2f"|format(b.total_amount) }}</td>
+                            <td>
+                                {% if b.status == 'Confirmed' %}
+                                    <span class="badge bg-success-subtle text-success px-3 py-1 rounded-pill">Confirmed</span>
+                                {% elif b.status == 'Cancelled' %}
+                                    <span class="badge bg-danger-subtle text-danger px-3 py-1 rounded-pill">Cancelled</span>
+                                {% else %}
+                                    <span class="badge bg-info-subtle text-info-emphasis px-3 py-1 rounded-pill">{{ b.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <form action="{{ url_for('admin.update_booking_status', booking_id=b.id) }}" method="POST" class="d-flex gap-1">
+                                    <select name="status" class="form-select form-select-sm rounded-3">
+                                        <option value="Confirmed" {% if b.status == 'Confirmed' %}selected{% endif %}>Confirmed</option>
+                                        <option value="Completed" {% if b.status == 'Completed' %}selected{% endif %}>Completed</option>
+                                        <option value="Cancelled" {% if b.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-sm btn-primary-custom rounded-3">Save</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="9" class="text-center text-muted py-4">No bookings recorded.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

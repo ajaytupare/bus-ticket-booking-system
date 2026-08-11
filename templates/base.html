@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}BusGo - Online Bus Ticket Booking System{% endblock %}</title>
+    <!-- Google Fonts & Bootstrap 5 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg sticky-top shadow-sm navbar-dark bg-slate">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2 fw-bold text-primary-custom" href="{{ url_for('user.index') }}">
+                <i class="fa-solid fa-bus-simple fa-lg"></i>
+                <span class="fs-4 text-white">Bus<span class="text-primary-custom">Go</span></span>
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                    <li class="nav-item">
+                        <a class="nav-link text-light-custom" href="{{ url_for('user.index') }}"><i class="fa-solid fa-house me-1"></i> Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-light-custom" href="{{ url_for('user.search_buses') }}"><i class="fa-solid fa-magnifying-glass me-1"></i> Search Buses</a>
+                    </li>
+                    {% if session.get('user_id') %}
+                        <li class="nav-item">
+                            <a class="nav-link text-light-custom" href="{{ url_for('booking.user_bookings') }}"><i class="fa-solid fa-ticket me-1"></i> My Bookings</a>
+                        </li>
+                    {% endif %}
+                    {% if session.get('role') == 'admin' %}
+                        <li class="nav-item">
+                            <a class="nav-link text-warning fw-semibold" href="{{ url_for('admin.dashboard') }}"><i class="fa-solid fa-gauge-high me-1"></i> Admin Dashboard</a>
+                        </li>
+                    {% endif %}
+                </ul>
+
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
+                    {% if session.get('user_id') %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-white d-flex align-items-center gap-2" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <div class="avatar-circle bg-primary-custom text-white fw-bold">
+                                    {{ session.get('name', 'U')[0] | upper }}
+                                </div>
+                                <span>{{ session.get('name') }}</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+                                <li><a class="dropdown-item" href="{{ url_for('user.profile') }}"><i class="fa-solid fa-user me-2 text-primary"></i> My Profile</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('booking.user_bookings') }}"><i class="fa-solid fa-clock-rotate-left me-2 text-primary"></i> Booking History</a></li>
+                                {% if session.get('role') == 'admin' %}
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-warning" href="{{ url_for('admin.dashboard') }}"><i class="fa-solid fa-crown me-2"></i> Admin Panel</a></li>
+                                {% endif %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}"><i class="fa-solid fa-right-from-bracket me-2"></i> Logout</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item me-2">
+                            <a class="btn btn-outline-light px-4 rounded-pill btn-sm" href="{{ url_for('auth.login') }}"><i class="fa-solid fa-right-to-bracket me-1"></i> Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-primary-custom px-4 rounded-pill btn-sm" href="{{ url_for('auth.register') }}"><i class="fa-solid fa-user-plus me-1"></i> Register</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages Container -->
+    <div class="container mt-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm border-0 rounded-3 mb-3 d-flex align-items-center gap-2" role="alert">
+                        {% if category == 'success' %}
+                            <i class="fa-solid fa-circle-check fs-5"></i>
+                        {% elif category == 'danger' %}
+                            <i class="fa-solid fa-triangle-exclamation fs-5"></i>
+                        {% elif category == 'warning' %}
+                            <i class="fa-solid fa-circle-exclamation fs-5"></i>
+                        {% else %}
+                            <i class="fa-solid fa-circle-info fs-5"></i>
+                        {% endif %}
+                        <div>{{ message }}</div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Main Body Content -->
+    <main class="flex-grow-1">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate text-white mt-auto py-4 border-top border-dark">
+        <div class="container">
+            <div class="row gy-4">
+                <div class="col-lg-4">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="fa-solid fa-bus-simple fa-xl text-primary-custom"></i>
+                        <span class="fs-4 fw-bold">Bus<span class="text-primary-custom">Go</span></span>
+                    </div>
+                    <p class="text-muted-custom small">Your trusted online bus ticket booking platform. Fast, secure, and hassle-free journeys across India.</p>
+                </div>
+                <div class="col-lg-2 col-6">
+                    <h6 class="text-uppercase text-white fw-bold mb-3">Quick Links</h6>
+                    <ul class="list-unstyled mb-0 text-muted-custom small">
+                        <li><a href="{{ url_for('user.index') }}" class="text-reset text-decoration-none py-1 d-block">Home</a></li>
+                        <li><a href="{{ url_for('user.search_buses') }}" class="text-reset text-decoration-none py-1 d-block">Search Buses</a></li>
+                        <li><a href="{{ url_for('auth.login') }}" class="text-reset text-decoration-none py-1 d-block">Login</a></li>
+                        <li><a href="{{ url_for('auth.register') }}" class="text-reset text-decoration-none py-1 d-block">Register Account</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <h6 class="text-uppercase text-white fw-bold mb-3">Popular Routes</h6>
+                    <ul class="list-unstyled mb-0 text-muted-custom small">
+                        <li><a href="{{ url_for('user.search_buses', source='Kolhapur', destination='Pune', travel_date='2026-08-15') }}" class="text-reset text-decoration-none py-1 d-block">Kolhapur → Pune</a></li>
+                        <li><a href="{{ url_for('user.search_buses', source='Kolhapur', destination='Mumbai', travel_date='2026-08-15') }}" class="text-reset text-decoration-none py-1 d-block">Kolhapur → Mumbai</a></li>
+                        <li><a href="{{ url_for('user.search_buses', source='Pune', destination='Mumbai', travel_date='2026-08-15') }}" class="text-reset text-decoration-none py-1 d-block">Pune → Mumbai</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3">
+                    <h6 class="text-uppercase text-white fw-bold mb-3">Customer Support</h6>
+                    <p class="text-muted-custom small mb-1"><i class="fa-solid fa-phone me-2 text-primary-custom"></i> +91 1800-123-BUSGO</p>
+                    <p class="text-muted-custom small mb-1"><i class="fa-solid fa-envelope me-2 text-primary-custom"></i> support@busgo.com</p>
+                    <p class="text-muted-custom small"><i class="fa-solid fa-location-dot me-2 text-primary-custom"></i> Maharashtra, India</p>
+                </div>
+            </div>
+            <hr class="my-4 border-secondary opacity-25">
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center small text-muted-custom">
+                <p class="mb-0">&copy; 2026 BusGo Ticket Booking System. Built with Python Flask & MySQL.</p>
+                <div class="d-flex gap-3 mt-2 mt-sm-0">
+                    <a href="#" class="text-reset text-decoration-none">Privacy Policy</a>
+                    <a href="#" class="text-reset text-decoration-none">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

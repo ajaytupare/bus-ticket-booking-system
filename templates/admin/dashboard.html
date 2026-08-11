@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - BusGo{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold text-slate mb-1"><i class="fa-solid fa-gauge-high text-primary-custom me-2"></i> Admin Dashboard</h3>
+            <p class="text-secondary mb-0">System performance, statistics, and quick administrative controls</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('admin.add_bus') }}" class="btn btn-primary-custom rounded-pill px-4 fw-bold">
+                <i class="fa-solid fa-plus me-1"></i> Add New Bus
+            </a>
+        </div>
+    </div>
+
+    <!-- Stat Cards Grid -->
+    <div class="row g-4 mb-5">
+        <div class="col-sm-6 col-lg-4">
+            <div class="card card-custom border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small text-uppercase fw-bold">Total Users</span>
+                        <h2 class="fw-bold text-slate mb-0 mt-1">{{ stats.total_users }}</h2>
+                    </div>
+                    <div class="stat-icon bg-primary-subtle text-primary-custom rounded-4 p-3">
+                        <i class="fa-solid fa-users fa-2xl"></i>
+                    </div>
+                </div>
+                <div class="mt-3 pt-2 border-top">
+                    <a href="{{ url_for('admin.users') }}" class="small text-primary-custom text-decoration-none fw-semibold">View All Registered Users <i class="fa-solid fa-arrow-right ms-1"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-4">
+            <div class="card card-custom border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small text-uppercase fw-bold">Total Buses</span>
+                        <h2 class="fw-bold text-slate mb-0 mt-1">{{ stats.total_buses }}</h2>
+                    </div>
+                    <div class="stat-icon bg-info-subtle text-info-emphasis rounded-4 p-3">
+                        <i class="fa-solid fa-bus fa-2xl"></i>
+                    </div>
+                </div>
+                <div class="mt-3 pt-2 border-top">
+                    <a href="{{ url_for('admin.buses') }}" class="small text-primary-custom text-decoration-none fw-semibold">Manage Bus Fleet <i class="fa-solid fa-arrow-right ms-1"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-4">
+            <div class="card card-custom border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small text-uppercase fw-bold">Total Bookings</span>
+                        <h2 class="fw-bold text-slate mb-0 mt-1">{{ stats.total_bookings }}</h2>
+                    </div>
+                    <div class="stat-icon bg-warning-subtle text-warning-emphasis rounded-4 p-3">
+                        <i class="fa-solid fa-ticket fa-2xl"></i>
+                    </div>
+                </div>
+                <div class="mt-3 pt-2 border-top">
+                    <a href="{{ url_for('admin.bookings') }}" class="small text-primary-custom text-decoration-none fw-semibold">View Master Booking Log <i class="fa-solid fa-arrow-right ms-1"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-4">
+            <div class="card card-custom border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small text-uppercase fw-bold">Confirmed Bookings</span>
+                        <h2 class="fw-bold text-success mb-0 mt-1">{{ stats.confirmed_bookings }}</h2>
+                    </div>
+                    <div class="stat-icon bg-success-subtle text-success rounded-4 p-3">
+                        <i class="fa-solid fa-circle-check fa-2xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-4">
+            <div class="card card-custom border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small text-uppercase fw-bold">Cancelled Bookings</span>
+                        <h2 class="fw-bold text-danger mb-0 mt-1">{{ stats.cancelled_bookings }}</h2>
+                    </div>
+                    <div class="stat-icon bg-danger-subtle text-danger rounded-4 p-3">
+                        <i class="fa-solid fa-circle-xmark fa-2xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-4">
+            <div class="card card-custom border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small text-uppercase fw-bold">Total Revenue</span>
+                        <h2 class="fw-bold text-success mb-0 mt-1">₹{{ "%.2f"|format(stats.total_revenue) }}</h2>
+                    </div>
+                    <div class="stat-icon bg-success-subtle text-success rounded-4 p-3">
+                        <i class="fa-solid fa-indian-rupee-sign fa-2xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Bookings Table -->
+    <div class="card card-custom border-0 shadow-sm rounded-4 p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h5 class="fw-bold text-slate mb-0">Recent Customer Bookings</h5>
+            <a href="{{ url_for('admin.bookings') }}" class="btn btn-outline-primary btn-sm rounded-pill">View All Bookings</a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Ref Code</th>
+                        <th>Customer</th>
+                        <th>Bus Operator</th>
+                        <th>Route</th>
+                        <th>Seats</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for b in recent_bookings %}
+                        <tr>
+                            <td class="fw-bold font-monospace text-primary-custom">{{ b.booking_reference }}</td>
+                            <td>{{ b.user_name }}</td>
+                            <td>{{ b.operator_name }} ({{ b.bus_number }})</td>
+                            <td>{{ b.source }} → {{ b.destination }}</td>
+                            <td><span class="badge bg-light text-dark border">{{ b.seat_numbers }}</span></td>
+                            <td class="fw-bold text-success">₹{{ "%.2f"|format(b.total_amount) }}</td>
+                            <td>
+                                {% if b.status == 'Confirmed' %}
+                                    <span class="badge bg-success-subtle text-success px-3 py-1 rounded-pill">Confirmed</span>
+                                {% elif b.status == 'Cancelled' %}
+                                    <span class="badge bg-danger-subtle text-danger px-3 py-1 rounded-pill">Cancelled</span>
+                                {% else %}
+                                    <span class="badge bg-secondary-subtle text-secondary px-3 py-1 rounded-pill">{{ b.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ url_for('booking.ticket', booking_id=b.id) }}" class="btn btn-sm btn-outline-secondary rounded-3">View</a>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-4">No recent bookings recorded.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

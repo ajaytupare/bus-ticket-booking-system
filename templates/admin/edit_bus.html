@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Bus - Admin - BusGo{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card card-custom border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header bg-slate text-white p-4 d-flex justify-content-between align-items-center">
+                    <h4 class="fw-bold mb-0"><i class="fa-solid fa-pen-to-square text-primary-custom me-2"></i> Edit Bus Route: {{ bus.bus_number }}</h4>
+                    <a href="{{ url_for('admin.buses') }}" class="btn btn-outline-light btn-sm rounded-pill">Back to Bus List</a>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <form action="{{ url_for('admin.edit_bus', bus_id=bus.id) }}" method="POST">
+                        <div class="row g-3">
+                            <!-- Bus Number -->
+                            <div class="col-md-6">
+                                <label for="bus_number" class="form-label fw-semibold text-slate">Bus Registration Number</label>
+                                <input type="text" class="form-control rounded-3" id="bus_number" name="bus_number" value="{{ bus.bus_number }}" required>
+                            </div>
+
+                            <!-- Operator Name -->
+                            <div class="col-md-6">
+                                <label for="operator_name" class="form-label fw-semibold text-slate">Travel Operator Name</label>
+                                <input type="text" class="form-control rounded-3" id="operator_name" name="operator_name" value="{{ bus.operator_name }}" required>
+                            </div>
+
+                            <!-- Source -->
+                            <div class="col-md-6">
+                                <label for="source" class="form-label fw-semibold text-slate">Source City</label>
+                                <input type="text" class="form-control rounded-3" id="source" name="source" value="{{ bus.source }}" required>
+                            </div>
+
+                            <!-- Destination -->
+                            <div class="col-md-6">
+                                <label for="destination" class="form-label fw-semibold text-slate">Destination City</label>
+                                <input type="text" class="form-control rounded-3" id="destination" name="destination" value="{{ bus.destination }}" required>
+                            </div>
+
+                            <!-- Departure Time -->
+                            <div class="col-md-6">
+                                <label for="departure_time" class="form-label fw-semibold text-slate">Departure Time</label>
+                                <input type="text" class="form-control rounded-3" id="departure_time" name="departure_time" value="{{ bus.departure_time }}" required>
+                            </div>
+
+                            <!-- Arrival Time -->
+                            <div class="col-md-6">
+                                <label for="arrival_time" class="form-label fw-semibold text-slate">Arrival Time</label>
+                                <input type="text" class="form-control rounded-3" id="arrival_time" name="arrival_time" value="{{ bus.arrival_time }}" required>
+                            </div>
+
+                            <!-- Travel Date -->
+                            <div class="col-md-6">
+                                <label for="travel_date" class="form-label fw-semibold text-slate">Travel Date</label>
+                                <input type="date" class="form-control rounded-3" id="travel_date" name="travel_date" value="{{ bus.travel_date }}" required>
+                            </div>
+
+                            <!-- Bus Type -->
+                            <div class="col-md-6">
+                                <label for="bus_type" class="form-label fw-semibold text-slate">Bus Category / Type</label>
+                                <select class="form-select rounded-3" id="bus_type" name="bus_type" required>
+                                    <option value="AC Sleeper" {% if bus.bus_type == 'AC Sleeper' %}selected{% endif %}>AC Sleeper</option>
+                                    <option value="AC Seater" {% if bus.bus_type == 'AC Seater' %}selected{% endif %}>AC Seater</option>
+                                    <option value="Non-AC Sleeper" {% if bus.bus_type == 'Non-AC Sleeper' %}selected{% endif %}>Non-AC Sleeper</option>
+                                    <option value="Non-AC Seater" {% if bus.bus_type == 'Non-AC Seater' %}selected{% endif %}>Non-AC Seater</option>
+                                </select>
+                            </div>
+
+                            <!-- Total Seats -->
+                            <div class="col-md-6">
+                                <label for="total_seats" class="form-label fw-semibold text-slate">Total Seats</label>
+                                <input type="number" class="form-control rounded-3" id="total_seats" name="total_seats" value="{{ bus.total_seats }}" min="10" max="60" required>
+                            </div>
+
+                            <!-- Ticket Price -->
+                            <div class="col-md-6">
+                                <label for="price" class="form-label fw-semibold text-slate">Price Per Seat (₹)</label>
+                                <input type="number" step="0.01" class="form-control rounded-3" id="price" name="price" value="{{ bus.price }}" required>
+                            </div>
+
+                            <!-- Submit -->
+                            <div class="col-12 mt-4">
+                                <button type="submit" class="btn btn-primary-custom btn-lg w-100 rounded-3 fw-bold shadow">
+                                    <i class="fa-solid fa-pen-to-square me-2"></i> Update Bus Details
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

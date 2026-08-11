@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile - BusGo{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card card-custom border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header bg-slate text-white text-center py-4 border-0">
+                    <div class="avatar-circle bg-primary-custom text-white fs-3 fw-bold mx-auto mb-2" style="width: 70px; height: 70px; line-height: 70px;">
+                        {{ user.name[0] | upper }}
+                    </div>
+                    <h3 class="fw-bold mb-1">{{ user.name }}</h3>
+                    <span class="badge bg-primary-subtle text-primary-custom px-3 py-1 rounded-pill">{{ user.role | upper }} ACCOUNT</span>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+                            <span class="text-muted"><i class="fa-solid fa-user me-2 text-primary-custom"></i> Full Name</span>
+                            <strong class="text-slate">{{ user.name }}</strong>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+                            <span class="text-muted"><i class="fa-solid fa-envelope me-2 text-primary-custom"></i> Email Address</span>
+                            <strong class="text-slate">{{ user.email }}</strong>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+                            <span class="text-muted"><i class="fa-solid fa-phone me-2 text-primary-custom"></i> Phone Number</span>
+                            <strong class="text-slate">{{ user.phone }}</strong>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+                            <span class="text-muted"><i class="fa-regular fa-clock me-2 text-primary-custom"></i> Account Created</span>
+                            <strong class="text-slate">{{ user.created_at }}</strong>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 text-center">
+                        <a href="{{ url_for('booking.user_bookings') }}" class="btn btn-primary-custom px-4 py-2 rounded-pill fw-bold">
+                            <i class="fa-solid fa-ticket me-2"></i> View My Bookings
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

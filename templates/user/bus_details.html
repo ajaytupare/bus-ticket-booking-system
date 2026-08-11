@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ bus.operator_name }} - Bus Details - BusGo{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card card-custom border-0 shadow-lg rounded-4 overflow-hidden mb-4">
+                <div class="card-header bg-slate text-white p-4 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="fw-bold mb-1">{{ bus.operator_name }}</h3>
+                        <span class="badge bg-primary-custom px-3 py-1 fs-6">{{ bus.bus_number }}</span>
+                        <span class="badge bg-secondary ms-2 px-3 py-1 fs-6">{{ bus.bus_type }}</span>
+                    </div>
+                    <div class="text-end">
+                        <span class="fs-2 fw-bold text-primary-custom">₹{{ "%.2f"|format(bus.price) }}</span>
+                        <span class="text-muted-custom small d-block">per seat</span>
+                    </div>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <div class="row gy-4 border-bottom pb-4 mb-4">
+                        <div class="col-md-3">
+                            <span class="text-muted small d-block text-uppercase fw-semibold">Route</span>
+                            <h5 class="fw-bold text-slate mb-0">{{ bus.source }} <i class="fa-solid fa-arrow-right text-primary-custom mx-1"></i> {{ bus.destination }}</h5>
+                        </div>
+                        <div class="col-md-3">
+                            <span class="text-muted small d-block text-uppercase fw-semibold">Travel Date</span>
+                            <h5 class="fw-bold text-slate mb-0"><i class="fa-regular fa-calendar-days text-primary-custom me-1"></i> {{ bus.travel_date }}</h5>
+                        </div>
+                        <div class="col-md-3">
+                            <span class="text-muted small d-block text-uppercase fw-semibold">Departure Time</span>
+                            <h5 class="fw-bold text-slate mb-0"><i class="fa-regular fa-clock text-primary-custom me-1"></i> {{ bus.departure_time }}</h5>
+                        </div>
+                        <div class="col-md-3">
+                            <span class="text-muted small d-block text-uppercase fw-semibold">Arrival Time</span>
+                            <h5 class="fw-bold text-slate mb-0"><i class="fa-regular fa-clock text-primary-custom me-1"></i> {{ bus.arrival_time }}</h5>
+                        </div>
+                    </div>
+
+                    <div class="row gy-4 align-items-center">
+                        <div class="col-md-6">
+                            <h5 class="fw-bold text-slate mb-3">Capacity & Availability</h5>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between px-0">
+                                    <span>Total Bus Capacity:</span>
+                                    <strong class="text-dark">{{ bus.total_seats }} Seats</strong>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between px-0">
+                                    <span>Currently Available Seats:</span>
+                                    <strong class="text-success">{{ bus.available_seats }} Seats</strong>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between px-0">
+                                    <span>Booked Seats:</span>
+                                    <strong class="text-danger">{{ bus.total_seats - bus.available_seats }} Seats</strong>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="col-md-6 text-center text-md-end">
+                            <a href="{{ url_for('booking.book_bus', bus_id=bus.id) }}" class="btn btn-primary-custom btn-lg px-5 py-3 rounded-3 fw-bold shadow">
+                                Proceed to Book Ticket <i class="fa-solid fa-arrow-right ms-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

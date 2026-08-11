@@ -1,0 +1,230 @@
+{% extends 'base.html' %}
+
+{% block title %}BusGo - Book Your Journey With Ease{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section py-5 position-relative overflow-hidden">
+    <div class="container position-relative z-2">
+        <div class="row align-items-center gy-5">
+            <div class="col-lg-6 text-center text-lg-start">
+                <span class="badge bg-primary-subtle text-primary-custom px-3 py-2 rounded-pill fw-semibold mb-3">
+                    <i class="fa-solid fa-bolt me-1"></i> Fast & Secure Ticket Reservation
+                </span>
+                <h1 class="display-4 fw-extrabold text-slate mb-3">
+                    Book Your Journey <br><span class="text-primary-custom">With Ease</span>
+                </h1>
+                <p class="lead text-secondary mb-4">
+                    Search, compare and book your bus tickets quickly and securely across top operators and destinations.
+                </p>
+                <div class="d-flex flex-wrap justify-content-center justify-content-lg-start gap-4 mb-4">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="feature-icon bg-success-subtle text-success rounded-circle">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+                        <span class="fw-medium text-dark">Instant Confirmation</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="feature-icon bg-primary-subtle text-primary-custom rounded-circle">
+                            <i class="fa-solid fa-chair"></i>
+                        </div>
+                        <span class="fw-medium text-dark">Live Seat Selection</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bus Search Card -->
+            <div class="col-lg-6">
+                <div class="card card-custom border-0 shadow-lg p-4 p-md-5 rounded-4 bg-white">
+                    <div class="d-flex align-items-center gap-2 mb-4">
+                        <div class="bg-primary-custom text-white p-2 rounded-3">
+                            <i class="fa-solid fa-route fa-lg"></i>
+                        </div>
+                        <h4 class="fw-bold mb-0 text-slate">Search Available Buses</h4>
+                    </div>
+
+                    <form action="{{ url_for('user.search_buses') }}" method="GET" id="searchForm">
+                        <div class="row g-3">
+                            <!-- Source -->
+                            <div class="col-md-6">
+                                <label for="source" class="form-label fw-semibold text-slate small">
+                                    <i class="fa-solid fa-location-dot text-primary-custom me-1"></i> From (Source)
+                                </label>
+                                <input type="text" list="sourceList" class="form-control form-control-lg fs-6 rounded-3" id="source" name="source" placeholder="e.g. Kolhapur" required value="Kolhapur">
+                                <datalist id="sourceList">
+                                    {% for s in sources %}
+                                        <option value="{{ s }}">
+                                    {% endfor %}
+                                </datalist>
+                            </div>
+
+                            <!-- Destination -->
+                            <div class="col-md-6">
+                                <label for="destination" class="form-label fw-semibold text-slate small">
+                                    <i class="fa-solid fa-location-arrow text-primary-custom me-1"></i> To (Destination)
+                                </label>
+                                <input type="text" list="destList" class="form-control form-control-lg fs-6 rounded-3" id="destination" name="destination" placeholder="e.g. Pune" required value="Pune">
+                                <datalist id="destList">
+                                    {% for d in destinations %}
+                                        <option value="{{ d }}">
+                                    {% endfor %}
+                                </datalist>
+                            </div>
+
+                            <!-- Travel Date -->
+                            <div class="col-md-6">
+                                <label for="travel_date" class="form-label fw-semibold text-slate small">
+                                    <i class="fa-regular fa-calendar-days text-primary-custom me-1"></i> Travel Date
+                                </label>
+                                <input type="date" class="form-control form-control-lg fs-6 rounded-3" id="travel_date" name="travel_date" min="{{ today_date }}" value="2026-08-15" required>
+                            </div>
+
+                            <!-- Passenger Count -->
+                            <div class="col-md-6">
+                                <label for="passengers" class="form-label fw-semibold text-slate small">
+                                    <i class="fa-solid fa-users text-primary-custom me-1"></i> Passengers
+                                </label>
+                                <select class="form-select form-select-lg fs-6 rounded-3" id="passengers" name="passengers">
+                                    <option value="1" selected>1 Passenger</option>
+                                    <option value="2">2 Passengers</option>
+                                    <option value="3">3 Passengers</option>
+                                    <option value="4">4 Passengers</option>
+                                    <option value="5">5 Passengers</option>
+                                </select>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="col-12 mt-4">
+                                <button type="submit" class="btn btn-primary-custom btn-lg w-100 py-3 rounded-3 fw-bold text-uppercase tracking-wider shadow">
+                                    <i class="fa-solid fa-magnifying-glass me-2"></i> Search Buses
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Popular Routes Section -->
+<section class="py-5 bg-white">
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold text-slate">Popular Travel Routes</h2>
+            <p class="text-secondary">Discover trending bus routes at unbeatable prices</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden route-card card-custom">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="badge bg-primary-subtle text-primary-custom fw-semibold px-3 py-2 rounded-pill">Daily Buses</span>
+                            <span class="text-muted small"><i class="fa-regular fa-clock me-1"></i> ~5 hrs</span>
+                        </div>
+                        <h4 class="fw-bold text-slate mb-2">Kolhapur <i class="fa-solid fa-arrow-right text-primary-custom mx-2"></i> Pune</h4>
+                        <p class="text-muted small mb-3">Top operators: Shree Travels, VRL Travels, Purple</p>
+                        <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                            <div>
+                                <span class="text-muted small d-block">Starting from</span>
+                                <span class="fs-4 fw-bold text-primary-custom">₹550</span>
+                            </div>
+                            <a href="{{ url_for('user.search_buses', source='Kolhapur', destination='Pune', travel_date='2026-08-15') }}" class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-semibold">Book Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden route-card card-custom">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="badge bg-primary-subtle text-primary-custom fw-semibold px-3 py-2 rounded-pill">Overnight Sleeper</span>
+                            <span class="text-muted small"><i class="fa-regular fa-clock me-1"></i> ~9 hrs</span>
+                        </div>
+                        <h4 class="fw-bold text-slate mb-2">Kolhapur <i class="fa-solid fa-arrow-right text-primary-custom mx-2"></i> Mumbai</h4>
+                        <p class="text-muted small mb-3">Top operators: Neeta Tours, Purple Metrolink</p>
+                        <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                            <div>
+                                <span class="text-muted small d-block">Starting from</span>
+                                <span class="fs-4 fw-bold text-primary-custom">₹750</span>
+                            </div>
+                            <a href="{{ url_for('user.search_buses', source='Kolhapur', destination='Mumbai', travel_date='2026-08-15') }}" class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-semibold">Book Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden route-card card-custom">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="badge bg-primary-subtle text-primary-custom fw-semibold px-3 py-2 rounded-pill">Express Service</span>
+                            <span class="text-muted small"><i class="fa-regular fa-clock me-1"></i> ~4 hrs</span>
+                        </div>
+                        <h4 class="fw-bold text-slate mb-2">Pune <i class="fa-solid fa-arrow-right text-primary-custom mx-2"></i> Mumbai</h4>
+                        <p class="text-muted small mb-3">Top operators: Purple Metrolink, Zingbus</p>
+                        <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                            <div>
+                                <span class="text-muted small d-block">Starting from</span>
+                                <span class="fs-4 fw-bold text-primary-custom">₹450</span>
+                            </div>
+                            <a href="{{ url_for('user.search_buses', source='Pune', destination='Mumbai', travel_date='2026-08-15') }}" class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-semibold">Book Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Us -->
+<section class="py-5 bg-light">
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold text-slate">Why Book With BusGo?</h2>
+            <p class="text-secondary">Designed to make your travel experience smooth and transparent</p>
+        </div>
+
+        <div class="row g-4 text-center">
+            <div class="col-md-3">
+                <div class="p-4 bg-white rounded-4 shadow-sm h-100">
+                    <div class="bg-primary-subtle text-primary-custom p-3 rounded-circle d-inline-flex mb-3">
+                        <i class="fa-solid fa-ticket-simple fa-2xl"></i>
+                    </div>
+                    <h5 class="fw-bold text-slate">Easy Booking</h5>
+                    <p class="text-muted small mb-0">Select your seats visually and get instant digital tickets in seconds.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-4 bg-white rounded-4 shadow-sm h-100">
+                    <div class="bg-success-subtle text-success p-3 rounded-circle d-inline-flex mb-3">
+                        <i class="fa-solid fa-shield-check fa-2xl"></i>
+                    </div>
+                    <h5 class="fw-bold text-slate">100% Safe & Secure</h5>
+                    <p class="text-muted small mb-0">Protected transactions and verified seat assignment engine.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-4 bg-white rounded-4 shadow-sm h-100">
+                    <div class="bg-warning-subtle text-warning-emphasis p-3 rounded-circle d-inline-flex mb-3">
+                        <i class="fa-solid fa-tags fa-2xl"></i>
+                    </div>
+                    <h5 class="fw-bold text-slate">Best Price Guarantee</h5>
+                    <p class="text-muted small mb-0">Transparent fares with zero hidden charges or booking fees.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-4 bg-white rounded-4 shadow-sm h-100">
+                    <div class="bg-info-subtle text-info-emphasis p-3 rounded-circle d-inline-flex mb-3">
+                        <i class="fa-solid fa-headset fa-2xl"></i>
+                    </div>
+                    <h5 class="fw-bold text-slate">24/7 Support</h5>
+                    <p class="text-muted small mb-0">Dedicated support team ready to assist your journey inquiries.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

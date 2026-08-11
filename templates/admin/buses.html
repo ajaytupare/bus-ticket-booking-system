@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Buses - Admin - BusGo{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold text-slate mb-1"><i class="fa-solid fa-bus text-primary-custom me-2"></i> Manage Bus Fleet</h3>
+            <p class="text-secondary mb-0">Add, edit, or remove buses from the system</p>
+        </div>
+        <a href="{{ url_for('admin.add_bus') }}" class="btn btn-primary-custom rounded-pill px-4 fw-bold">
+            <i class="fa-solid fa-plus me-1"></i> Add New Bus
+        </a>
+    </div>
+
+    <div class="card card-custom border-0 shadow-sm rounded-4 p-4">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Bus Number</th>
+                        <th>Operator</th>
+                        <th>Route</th>
+                        <th>Timings</th>
+                        <th>Date</th>
+                        <th>Category</th>
+                        <th>Seats (Avail/Total)</th>
+                        <th>Price</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for bus in buses %}
+                        <tr>
+                            <td class="fw-bold font-monospace text-slate">{{ bus.bus_number }}</td>
+                            <td class="fw-semibold">{{ bus.operator_name }}</td>
+                            <td>{{ bus.source }} <i class="fa-solid fa-arrow-right text-primary-custom mx-1"></i> {{ bus.destination }}</td>
+                            <td class="small">{{ bus.departure_time }} - {{ bus.arrival_time }}</td>
+                            <td>{{ bus.travel_date }}</td>
+                            <td><span class="badge bg-primary-subtle text-primary-custom px-2 py-1">{{ bus.bus_type }}</span></td>
+                            <td>
+                                <span class="fw-bold text-success">{{ bus.available_seats }}</span> / {{ bus.total_seats }}
+                            </td>
+                            <td class="fw-bold text-dark">₹{{ "%.2f"|format(bus.price) }}</td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <a href="{{ url_for('admin.edit_bus', bus_id=bus.id) }}" class="btn btn-sm btn-outline-primary rounded-3" title="Edit Bus">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </a>
+                                    <form action="{{ url_for('admin.delete_bus', bus_id=bus.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete bus {{ bus.bus_number }}? All associated bookings will be deleted!');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-3" title="Delete Bus">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="9" class="text-center text-muted py-4">No buses currently registered in database.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

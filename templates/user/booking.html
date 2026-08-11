@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+
+{% block title %}Select Seats & Book - BusGo{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row g-4">
+        <!-- Bus & Seat Selection Panel -->
+        <div class="col-lg-7">
+            <div class="card card-custom border-0 shadow-sm rounded-4 p-4 mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h4 class="fw-bold text-slate mb-1">{{ bus.operator_name }}</h4>
+                        <p class="text-muted small mb-0">
+                            {{ bus.source }} <i class="fa-solid fa-arrow-right text-primary-custom mx-1"></i> {{ bus.destination }} | {{ bus.travel_date }} | {{ bus.departure_time }}
+                        </p>
+                    </div>
+                    <span class="badge bg-primary-subtle text-primary-custom fs-6 px-3 py-2 rounded-pill">{{ bus.bus_type }}</span>
+                </div>
+
+                <div class="alert alert-info border-0 rounded-3 d-flex align-items-center gap-2 py-2 px-3 small">
+                    <i class="fa-solid fa-circle-info fs-5 text-info"></i>
+                    <div>
+                        Required Seats to Select: <strong id="requiredSeatsCount">{{ passengers_count }}</strong> seat(s).
+                    </div>
+                </div>
+
+                <!-- Seat Legend -->
+                <div class="d-flex justify-content-center gap-4 my-3 py-2 bg-light rounded-3 small">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="seat-sample seat-available"></div>
+                        <span>Available</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="seat-sample seat-selected"></div>
+                        <span>Selected</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="seat-sample seat-booked"></div>
+                        <span>Booked</span>
+                    </div>
+                </div>
+
+                <!-- Interactive Bus Seat Grid Container -->
+                <div class="bus-container mx-auto p-4 bg-white border rounded-4 position-relative my-3 shadow-inner" style="max-width: 360px;">
+                    <!-- Driver Cabin Header -->
+                    <div class="d-flex justify-content-between align-items-center pb-3 border-bottom mb-4">
+                        <span class="text-muted fw-bold small text-uppercase tracking-wider">FRONT</span>
+                        <div class="steering-wheel text-secondary" title="Driver Position">
+                            <i class="fa-solid fa-steering-wheel fa-2x"></i>
+                        </div>
+                    </div>
+
+                    <!-- 40 Seat Grid (Rows A to J) -->
+                    <div class="seat-grid d-flex flex-column gap-3">
+                        {% set row_letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'] %}
+                        {% for r in row_letters %}
+                            <div class="d-flex justify-content-between align-items-center">
+                                <!-- Left Pair -->
+                                <div class="d-flex gap-2">
+                                    {% set s1 = r ~ '1' %}
+                                    {% set s2 = r ~ '2' %}
+                                    <button type="button" 
+                                            class="seat-btn {% if s1 in booked_seats %}booked{% else %}available{% endif %}" 
+                                            data-seat="{{ s1 }}" 
+                                            {% if s1 in booked_seats %}disabled{% endif %}>
+                                        {{ s1 }}
+                                    </button>
+                                    <button type="button" 
+                                            class="seat-btn {% if s2 in booked_seats %}booked{% else %}available{% endif %}" 
+                                            data-seat="{{ s2 }}" 
+                                            {% if s2 in booked_seats %}disabled{% endif %}>
+                                        {{ s2 }}
+                                    </button>
+                                </div>
+
+                                <!-- Aisle Gap -->
+                                <div class="aisle text-muted small fw-bold" style="font-size: 10px;">AISLE</div>
+
+                                <!-- Right Pair -->
+                                <div class="d-flex gap-2">
+                                    {% set s3 = r ~ '3' %}
+                                    {% set s4 = r ~ '4' %}
+                                    <button type="button" 
+                                            class="seat-btn {% if s3 in booked_seats %}booked{% else %}available{% endif %}" 
+                                            data-seat="{{ s3 }}" 
+                                            {% if s3 in booked_seats %}disabled{% endif %}>
+                                        {{ s3 }}
+                                    </button>
+                                    <button type="button" 
+                                            class="seat-btn {% if s4 in booked_seats %}booked{% else %}available{% endif %}" 
+                                            data-seat="{{ s4 }}" 
+                                            {% if s4 in booked_seats %}disabled{% endif %}>
+                                        {{ s4 }}
+                                    </button>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Back Marker -->
+                    <div class="text-center pt-3 border-top mt-4 text-muted fw-bold small text-uppercase tracking-wider">
+                        BACK
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Passenger Info & Booking Summary Sidebar -->
+        <div class="col-lg-5">
+            <form action="{{ url_for('booking.confirm_booking') }}" method="POST" id="bookingForm">
+                <input type="hidden" name="bus_id" value="{{ bus.id }}">
+                <input type="hidden" name="passengers_count" id="inputPassengersCount" value="{{ passengers_count }}">
+                <input type="hidden" name="selected_seats" id="inputSelectedSeats" value="">
+
+                <!-- Summary Card -->
+                <div class="card card-custom border-0 shadow-sm rounded-4 p-4 mb-4">
+                    <h5 class="fw-bold text-slate mb-3"><i class="fa-solid fa-receipt me-2 text-primary-custom"></i> Fare Summary</h5>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-secondary">Price per seat:</span>
+                        <strong class="text-dark">₹{{ "%.2f"|format(bus.price) }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-secondary">Selected Seat(s):</span>
+                        <strong class="text-primary-custom" id="selectedSeatsDisplay">None</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-secondary">Passengers:</span>
+                        <strong class="text-dark">{{ passengers_count }}</strong>
+                    </div>
+                    <hr class="my-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="fs-5 fw-bold text-slate">Total Amount:</span>
+                        <span class="fs-3 fw-bold text-success" id="totalAmountDisplay">₹0.00</span>
+                    </div>
+
+                    <div id="seatValidationError" class="alert alert-danger py-2 small d-none mb-3" role="alert">
+                        Please select exactly {{ passengers_count }} seat(s).
+                    </div>
+                </div>
+
+                <!-- Dynamic Passenger Form Fields -->
+                <div class="card card-custom border-0 shadow-sm rounded-4 p-4 mb-4">
+                    <h5 class="fw-bold text-slate mb-3"><i class="fa-solid fa-users me-2 text-primary-custom"></i> Passenger Information</h5>
+                    <div id="passengerFieldsContainer">
+                        <!-- Javascript will dynamically inject forms for selected seats -->
+                    </div>
+                </div>
+
+                <!-- Confirm Submit Button -->
+                <button type="submit" class="btn btn-primary-custom btn-lg w-100 py-3 rounded-3 fw-bold shadow" id="confirmBookingBtn" disabled>
+                    <i class="fa-solid fa-lock me-2"></i> Confirm Booking & Pay ₹<span id="btnPayAmount">0.00</span>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const pricePerSeat = {{ bus.price }};
+    const requiredSeatsCount = {{ passengers_count }};
+</script>
+<script src="{{ url_for('static', filename='js/booking.js') }}"></script>
+{% endblock %}

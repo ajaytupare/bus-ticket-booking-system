@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - BusGo{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card card-custom border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header bg-slate text-white text-center py-4 border-0">
+                    <i class="fa-solid fa-circle-user fa-3x text-primary-custom mb-2"></i>
+                    <h3 class="fw-bold mb-0">Welcome Back</h3>
+                    <p class="text-muted-custom small mb-0">Sign in to manage your bus bookings</p>
+                </div>
+                <div class="card-body p-4 p-md-5">
+                    <form action="{{ url_for('auth.login', next=request.args.get('next')) }}" method="POST" id="loginForm">
+                        <!-- Email Input -->
+                        <div class="mb-4">
+                            <label for="email" class="form-label fw-semibold text-slate">
+                                <i class="fa-solid fa-envelope me-1 text-primary-custom"></i> Email Address
+                            </label>
+                            <input type="email" class="form-control form-control-lg fs-6 rounded-3" id="email" name="email" placeholder="name@example.com" required value="user@busgo.com">
+                        </div>
+
+                        <!-- Password Input -->
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <label for="password" class="form-label fw-semibold text-slate mb-0">
+                                    <i class="fa-solid fa-key me-1 text-primary-custom"></i> Password
+                                </label>
+                            </div>
+                            <div class="input-group">
+                                <input type="password" class="form-control form-control-lg fs-6 rounded-start-3" id="password" name="password" placeholder="Enter your password" required value="User@123">
+                                <button class="btn btn-outline-secondary rounded-end-3" type="button" id="togglePassword">
+                                    <i class="fa-solid fa-eye" id="toggleIcon"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-primary-custom btn-lg w-100 py-3 rounded-3 fw-bold shadow">
+                            <i class="fa-solid fa-right-to-bracket me-2"></i> Log In
+                        </button>
+                    </form>
+
+                    <div class="mt-4 pt-3 border-top text-center text-secondary small">
+                        Don't have an account yet? 
+                        <a href="{{ url_for('auth.register') }}" class="text-primary-custom fw-bold text-decoration-none ms-1">Register Now</a>
+                    </div>
+                    
+                    <div class="mt-3 p-3 bg-light rounded-3 small">
+                        <span class="fw-bold text-slate d-block mb-1"><i class="fa-solid fa-circle-info text-info me-1"></i> Demo Credentials:</span>
+                        <div class="d-flex justify-content-between">
+                            <span><strong>Admin:</strong> admin@busgo.com</span>
+                            <span class="text-muted">Admin@123</span>
+                        </div>
+                        <div class="d-flex justify-content-between mt-1">
+                            <span><strong>Customer:</strong> user@busgo.com</span>
+                            <span class="text-muted">User@123</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
