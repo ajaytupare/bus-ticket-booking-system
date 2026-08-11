@@ -84,8 +84,11 @@ def ticket(booking_id):
         flash('Ticket not found.', 'danger')
         return redirect(url_for('booking.user_bookings'))
 
-    # Authorization Check: Normal user can only view their own ticket; admin can view any
-    if session['role'] != 'admin' and booking['user_id'] != session['user_id']:
+    # Authorization Check: Normal user can view their own ticket; admin can view any
+    current_user_id = int(session.get('user_id', 0))
+    booking_user_id = int(booking.get('user_id', 0))
+
+    if session.get('role') != 'admin' and booking_user_id != current_user_id:
         flash('Unauthorized access to ticket.', 'danger')
         return redirect(url_for('booking.user_bookings'))
 

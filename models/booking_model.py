@@ -89,28 +89,28 @@ class BookingModel:
     @staticmethod
     def get_by_id(booking_id):
         b_str = str(booking_id).strip()
-        if b_str.isdigit():
-            query = """
-                SELECT bk.*, b.operator_name, b.bus_number, b.source, b.destination, 
-                       b.departure_time, b.arrival_time, b.travel_date, b.bus_type, b.price,
-                       u.name as user_name, u.email as user_email, u.phone as user_phone
-                FROM bookings bk
-                JOIN buses b ON bk.bus_id = b.id
-                JOIN users u ON bk.user_id = u.id
-                WHERE bk.id = ? OR bk.booking_reference = ?
-            """
-            booking = query_db(query, (int(b_str), b_str), one=True)
-        else:
-            query = """
-                SELECT bk.*, b.operator_name, b.bus_number, b.source, b.destination, 
-                       b.departure_time, b.arrival_time, b.travel_date, b.bus_type, b.price,
-                       u.name as user_name, u.email as user_email, u.phone as user_phone
-                FROM bookings bk
-                JOIN buses b ON bk.bus_id = b.id
-                JOIN users u ON bk.user_id = u.id
-                WHERE bk.booking_reference = ?
-            """
-            booking = query_db(query, (b_str,), one=True)
+        target_id = int(b_str) if b_str.isdigit() else -1
+
+        query = """
+            SELECT bk.*, 
+                   COALESCE(b.operator_name, 'Travel Operator') as operator_name, 
+                   COALESCE(b.bus_number, 'N/A') as bus_number, 
+                   COALESCE(b.source, 'N/A') as source, 
+                   COALESCE(b.destination, 'N/A') as destination, 
+                   COALESCE(b.departure_time, 'N/A') as departure_time, 
+                   COALESCE(b.arrival_time, 'N/A') as arrival_time, 
+                   COALESCE(b.travel_date, 'N/A') as travel_date, 
+                   COALESCE(b.bus_type, 'Standard') as bus_type, 
+                   COALESCE(b.price, 0.0) as price,
+                   COALESCE(u.name, 'Customer') as user_name, 
+                   COALESCE(u.email, 'N/A') as user_email, 
+                   COALESCE(u.phone, 'N/A') as user_phone
+            FROM bookings bk
+            LEFT JOIN buses b ON bk.bus_id = b.id
+            LEFT JOIN users u ON bk.user_id = u.id
+            WHERE bk.id = ? OR LOWER(bk.booking_reference) = LOWER(?)
+        """
+        booking = query_db(query, (target_id, b_str), one=True)
 
         if booking:
             passengers_query = "SELECT * FROM passengers WHERE booking_id = ? ORDER BY seat_number ASC"
