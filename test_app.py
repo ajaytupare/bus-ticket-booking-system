@@ -9,10 +9,10 @@ class BusTicketSystemTestCase(unittest.TestCase):
         app.config['SECRET_KEY'] = 'test-secret'
         self.client = app.test_client()
 
-        # Clean up test artifacts to ensure test isolation
+        # Clean up test artifacts and release all seats on bus 1
         try:
-            query_db("DELETE FROM passengers WHERE booking_id IN (SELECT id FROM bookings WHERE user_id NOT IN (1, 2))", commit=True)
-            query_db("DELETE FROM bookings WHERE user_id NOT IN (1, 2)", commit=True)
+            query_db("DELETE FROM passengers", commit=True)
+            query_db("DELETE FROM bookings", commit=True)
             query_db("DELETE FROM users WHERE email NOT IN ('admin@busgo.com', 'user@busgo.com')", commit=True)
             query_db("UPDATE buses SET available_seats = total_seats WHERE id = 1", commit=True)
         except Exception:

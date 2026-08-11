@@ -26,6 +26,11 @@ def create_app():
     app.register_blueprint(booking_bp)
     app.register_blueprint(admin_bp)
 
+    # Favicon Route
+    @app.route('/favicon.ico')
+    def favicon():
+        return app.send_static_file('images/favicon.svg')
+
     # Error Handlers
     @app.errorhandler(404)
     def not_found_error(error):
