@@ -21,6 +21,35 @@ body {
     background-color: var(--dark-slate) !important;
 }
 
+/* Homepage Hero Section Background Image */
+.hero-section {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(37, 99, 235, 0.75) 100%), 
+                url('../images/hero_bus_bg.jpg') center/cover no-repeat;
+    color: #ffffff;
+    padding: 80px 0;
+}
+
+.hero-section h1, .hero-section p.lead, .hero-section .hero-text-white {
+    color: #ffffff !important;
+}
+
+.hero-section .badge-hero {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    color: #ffffff !important;
+    backdrop-filter: blur(8px);
+}
+
+.hero-section .feature-icon-glass {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    color: #ffffff !important;
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
 .text-slate {
     color: var(--dark-slate) !important;
 }
